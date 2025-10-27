@@ -111,20 +111,42 @@ df_vendas['Status_Entrega'] = df_vendas['Estado'].apply(lambda estado: "Rapida" 
 print(df_vendas)
 print(df_vendas.info())
 
-#Top 10 Produtos
+#Análise 1 Top 10 Produtos
 #Agrupa por nome de produto, soma a quantidade e ordena para encontrar os mais vendidos
-top_10_produtos = df_vendas.groupby('Nome_Produto')['Quantidade'].sum().sort_values(ascending=False).head(10)
-print(top_10_produtos)
+#top_10_produtos = df_vendas.groupby('Nome_Produto')['Quantidade'].sum().sort_values(ascending=False).head(10)
+#print(top_10_produtos)
 #Criar o gráfico
-sns.set_style("whitegrid")
-plt.figure(figsize=(12,7))
-top_10_produtos.sort_values(ascending=True).plot(kind="barh",color="skyblue")
+#sns.set_style("whitegrid")
+#plt.figure(figsize=(12,7))
+#top_10_produtos.sort_values(ascending=True).plot(kind="barh",color="skyblue")
 
 #Adiciona títulos e labels do gráfico
-plt.title ("Meu gráfico", fontsize = 18)
-plt.xlabel("Quantidade Vendida", fontsize = 12)
-plt.ylabel("Produto", fontsize = 12)
+#plt.title ("Meu gráfico", fontsize = 18)
+#plt.xlabel("Quantidade Vendida", fontsize = 12)
+#plt.ylabel("Produto", fontsize = 12)
 
 #Exibir o gráfico
+#plt.tight_layout()
+#plt.show()
+
+#Análise 2
+#Cria uma coluna para o mês para fazer agrupamento mensal
+df_vendas['Mes'] = df_vendas['Data_Pedido'].dt.to_period('M')
+#Agrupa por mês e soma o faturamento
+faturamento_mensal = df_vendas.groupby('Mes')['Faturamento'].sum()
+#Converter para string para exibir no gráfico
+faturamento_mensal.index = faturamento_mensal.index.strftime("%Y-%m")
+faturamento_mensal.map("R$ {:,.2f}".format)
+plt.figure(figsize=[12,6])
+faturamento_mensal.plot(kind="line",marker = 'o',linestyle = '-',color='green')
+plt.title("Evolução do Faturamento Mensal", fontsize = 16)
+plt.xlabel("Mês", fontsize = 12)
+plt.ylabel("Faturamento (R$)", fontsize = 12)
+#Rotação em 45º graus
+plt.xticks(rotation = 45)
+#Colocar grade tracejada e linhas finas
+plt.grid(True,which='both',linestyle = '--',linewidth = 0.5)
+#Ajusta os elementos para não sobreporem
 plt.tight_layout()
+#Exibe
 plt.show()
