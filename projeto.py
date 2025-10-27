@@ -98,5 +98,33 @@ def dsa_gera_dados_ficticios(num_registros = 600):
 #Gera os dados chamando a função
 df_vendas = dsa_gera_dados_ficticios(500)
 print(type(df_vendas))
-print(df_vendas.shape)
-print(df_vendas.describe)
+#print(df_vendas)
+df_vendas.head() #ver as 5 primeiras linhas
+df_vendas.tail() #ver as 5 últimas
+df_vendas.info() #ver informações gerais
+df_vendas.describe() #ver estatísticas descritivas
+#Converter a Data Pedido em formato datetime
+df_vendas["Data_Pedido"] = pd.to_datetime(df_vendas["Data_Pedido"])
+#Criando a coluna Faturamento
+df_vendas["Faturamento"] = df_vendas["Preco_Unitario"] * df_vendas["Quantidade"]
+df_vendas['Status_Entrega'] = df_vendas['Estado'].apply(lambda estado: "Rapida" if estado in ["SP","RJ","MG"] else "Normal")
+print(df_vendas)
+print(df_vendas.info())
+
+#Top 10 Produtos
+#Agrupa por nome de produto, soma a quantidade e ordena para encontrar os mais vendidos
+top_10_produtos = df_vendas.groupby('Nome_Produto')['Quantidade'].sum().sort_values(ascending=False).head(10)
+print(top_10_produtos)
+#Criar o gráfico
+sns.set_style("whitegrid")
+plt.figure(figsize=(12,7))
+top_10_produtos.sort_values(ascending=True).plot(kind="barh",color="skyblue")
+
+#Adiciona títulos e labels do gráfico
+plt.title ("Meu gráfico", fontsize = 18)
+plt.xlabel("Quantidade Vendida", fontsize = 12)
+plt.ylabel("Produto", fontsize = 12)
+
+#Exibir o gráfico
+plt.tight_layout()
+plt.show()
