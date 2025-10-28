@@ -112,6 +112,7 @@ print(df_vendas)
 print(df_vendas.info())
 
 #Análise 1 Top 10 Produtos
+#print("Análise 1")
 #Agrupa por nome de produto, soma a quantidade e ordena para encontrar os mais vendidos
 #top_10_produtos = df_vendas.groupby('Nome_Produto')['Quantidade'].sum().sort_values(ascending=False).head(10)
 #print(top_10_produtos)
@@ -130,23 +131,86 @@ print(df_vendas.info())
 #plt.show()
 
 #Análise 2
+#print("Análise 2")
 #Cria uma coluna para o mês para fazer agrupamento mensal
-df_vendas['Mes'] = df_vendas['Data_Pedido'].dt.to_period('M')
+#df_vendas['Mes'] = df_vendas['Data_Pedido'].dt.to_period('M')
 #Agrupa por mês e soma o faturamento
-faturamento_mensal = df_vendas.groupby('Mes')['Faturamento'].sum()
+#faturamento_mensal = df_vendas.groupby('Mes')['Faturamento'].sum()
 #Converter para string para exibir no gráfico
-faturamento_mensal.index = faturamento_mensal.index.strftime("%Y-%m")
-faturamento_mensal.map("R$ {:,.2f}".format)
-plt.figure(figsize=[12,6])
-faturamento_mensal.plot(kind="line",marker = 'o',linestyle = '-',color='green')
-plt.title("Evolução do Faturamento Mensal", fontsize = 16)
-plt.xlabel("Mês", fontsize = 12)
-plt.ylabel("Faturamento (R$)", fontsize = 12)
+#faturamento_mensal.index = faturamento_mensal.index.strftime("%Y-%m")
+#faturamento_mensal.map("R$ {:,.2f}".format)
+#plt.figure(figsize=[12,6])
+#faturamento_mensal.plot(kind="line",marker = 'o',linestyle = '-',color='green')
+#plt.title("Evolução do Faturamento Mensal", fontsize = 16)
+#plt.xlabel("Mês", fontsize = 12)
+#plt.ylabel("Faturamento (R$)", fontsize = 12)
 #Rotação em 45º graus
-plt.xticks(rotation = 45)
+#plt.xticks(rotation = 45)
 #Colocar grade tracejada e linhas finas
-plt.grid(True,which='both',linestyle = '--',linewidth = 0.5)
+#plt.grid(True,which='both',linestyle = '--',linewidth = 0.5)
 #Ajusta os elementos para não sobreporem
-plt.tight_layout()
+#plt.tight_layout()
 #Exibe
+#plt.show()
+
+#Análise 3
+#print("Análise 3")
+#Agrupa os dados por estado e soma o faturamento
+#vendas_estado = df_vendas.groupby('Estado')['Faturamento'].sum().sort_values(ascending=False)
+
+#Formata para duas casas decimais
+#print(vendas_estado.map('R$ {:.2f}'.format))
+#plt.figure(figsize=(12,7))
+#vendas_estado.plot(kind='bar', color = sns.color_palette('Spectral',7))
+#plt.title("Faturamento por Estado", fontsize = 16)
+#plt.xlabel("Estado", fontsize = 12)
+#plt.ylabel("Faturamento (R$)", fontsize = 12)
+#plt.xticks(rotation = 0)
+#plt.tight_layout()
+#plt.show()
+
+#Análise 4
+#Faturamento por categoria
+print("Análise 4")
+#Agrupar por categoria e soma o faturamento
+faturamento_categoria = df_vendas.groupby('Categoria')['Faturamento'].sum().sort_values(ascending=False)
+print(faturamento_categoria.map('R$ {:,.2f}'.format))
+
+#FuncFormatter para formatar os eixos
+from matplotlib.ticker import FuncFormatter
+
+# Ordena os dados para o gráfico ficar mais fácil de ler
+faturamento_ordenado = faturamento_categoria.sort_values(ascending = False)
+
+# Cria a Figura e os Eixos (ax) com plt.subplots()
+# Isso nos dá mais controle sobre os elementos do gráfico.
+fig, ax = plt.subplots(figsize = (12, 7))
+#Cria uma função para formatar os números
+#Recebe um valor x e transforma em string no formato R$ XX
+
+def formatar_milhares(y,pos):
+    #Formata o valor em milhares com o cifrão R$
+    return f"R$ {y/1000:,.0f}K"
+
+# Cria o objeto formatador
+formatter = FuncFormatter(formatar_milhares)
+
+# Aplica o formatador ao eixo Y (ax.yaxis)
+ax.yaxis.set_major_formatter(formatter)
+
+# Plota os dados usando o objeto 'ax'
+faturamento_ordenado.plot(kind = 'bar', ax = ax, color = sns.color_palette("viridis", len(faturamento_ordenado)))
+
+# Adiciona títulos e labels usando 'ax.set_...'
+ax.set_title('Faturamento Por Categoria', fontsize = 16)
+ax.set_xlabel('Categoria', fontsize = 12)
+ax.set_ylabel('Faturamento', fontsize = 12)
+
+# Ajusta a rotação dos rótulos do eixo X
+plt.xticks(rotation = 45, ha = 'right')
+
+# Garante que tudo fique bem ajustado na imagem final
+plt.tight_layout()
+
+# Exibe o gráfico
 plt.show()
